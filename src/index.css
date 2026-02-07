@@ -164,6 +164,9 @@ main{
   padding: 4rem 1.5rem 6rem;
 }
 
+.main-title{
+  padding: 2rem 0;
+}
 
 .search-bar{
   display: grid;
