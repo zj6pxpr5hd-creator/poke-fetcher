@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PokemonDisplay from "./PokemonDisplay";
 
 
@@ -47,11 +47,12 @@ function Body(){
                     throw new Error("Something went wrong during the request");
             }
         }
-            //esle response was successful
+            //else response was successful
             const data = await response.json();  //turn response in a javascript object
             setPokemondata(data);               //set state variable as response to display it ok screen
-            console.log(data);  // FOR TESTING
-            console.log(pokemondata);
+
+            localStorage.setItem(name, data);
+
 
         }catch  (error){ //an error accurred, i need to pass the error to the "response"
             setError(error.message);
@@ -67,6 +68,10 @@ function Body(){
         const re = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$/;
         return re.test(v);
     }
+
+    useEffect(() => {// FOR TESTING
+        console.log(pokemondata);
+    }, [pokemondata]);
 
     return(
         <main>
