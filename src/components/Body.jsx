@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PokemonDisplay from "./PokemonDisplay";
-import { checkCache, saveCache } from "../utils/cacheManagement";
+import { checkCache, retrieveDataFromCache, saveCache } from "../utils/cacheManagement";
 
 
 function Body(){
@@ -9,6 +9,7 @@ function Body(){
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false)
     const [pokemondata, setPokemondata] = useState(null);
+    const [servedfromcache, setServedfromcache] = useState(false);
 
     // https://pokeapi.co/api/v2/pokemon/{name}
 
@@ -21,25 +22,35 @@ function Body(){
             return;
         }
 
-        fetchPokemon(input.trim());//if name is valid fetch pokemon
+        retrievePokemonData(input.trim());//if name is valid fetch pokemon
         setInput("");
  
     }
 
-    const fetchPokemon = async (name) =>  {    //asyncronous function because it must wait for the response
+    const retrievePokemonData = async (name) =>  {    //asyncronous function because it must wait for the response
         
         setLoading(true);   //set loading state
         setError("");
 
         if(checkCache(name)){
             //POKEMON IS IN CACHE AND IT'S NOT STALE
-            const cache = JSON.parse(localStorage.getItem(key));
-            setPokemondata(cache.data);   //sets pokemon data as data retrieved from cache
-            setLoading(false);
+            
+            setPokemondata(retrieveDataFromCache(name).data);   //sets pokemon data as data retrieved from cache
+            
+            setServedfromcache(true);
+            
+
         } else {
+            fetchPokemonData(name);
+            
+        }
+        setLoading(false);
+    }
+
+    const fetchPokemonData = async (name) => {
             //fetches pokemon data
 
-            try{                //try to fetch pokemon
+            try{ //try to fetch pokemon
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);// fetch pokemon with Poke API
             
             if(!response.ok){   //in case the response did not produce a positive result
@@ -59,35 +70,29 @@ function Body(){
                 //else response was successful
                 const data = await response.json();  //turn response in a javascript object
                 setPokemondata(data);               //set state variable as response to display it ok screen
-
+                
+                setServedfromcache(false);
                 //saves data in localStorage as cache
                 saveCache(name, data);
 
             }catch  (error){ //an error accurred, i need to pass the error to the "response"
                 setError(error.message);
                 
-            }finally{
-                //end loading fase
-                setLoading(false);
             }
-        }
-        
-    }
-
+    };
 
     const isValidPokemon =  (pokemon)  => {
-        const v =  pokemon.trim();
-        const re = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$/;
+        const v = pokemon.trim();
+        if (v.length < 1 || v.length > 39) return false;
+        // Allow letters/numbers with dots inside words (no leading/trailing dot),
+        // and single spaces or hyphens between words (e.g., "mime jr.")
+        const re = /^[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*(?:[ -][A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*)*$/;
         return re.test(v);
-    }
-
-    useEffect(() => {// FOR TESTING
-        console.log(pokemondata);
-    }, [pokemondata]);
+    };
 
     const clearCache = () => {
         localStorage.clear();
-    }
+    };
 
     return(
         <main>
@@ -108,7 +113,7 @@ function Body(){
                 <button className="search-button" type="submit" >{loading ? "Searching" : "Search"}</button>
             </form>
             {error.length!==0 && <p>{error}</p>}
-            {pokemondata && <PokemonDisplay pokemon={pokemondata} />}
+            {pokemondata && <PokemonDisplay pokemon={pokemondata} servedfromcache={servedfromcache}/>}
             <button className="clear-button" onClick={clearCache}>Clear Cache</button>
         </main>
     );

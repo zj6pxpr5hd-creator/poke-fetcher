@@ -1,9 +1,14 @@
 import { useState } from "react";
 
-function PokemonDisplay({ pokemon }){
+function PokemonDisplay({ pokemon , servedfromcache }){
 
     const [isHovering, setIsHovering] = useState(false);
     
+    const refreshData =  () => {
+        
+    };
+
+
     return (
         <section className="pokemon-display">
             <div>
@@ -45,6 +50,8 @@ function PokemonDisplay({ pokemon }){
                         );
                     })}
                 </ol>
+                <p className="data-info">Dataset: {servedfromcache ? "Cache" : "Network"}</p>
+                {servedfromcache && <button onClick={refreshData}>Refresh data</button>}
             </div>
         </section>
     );
