@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function PokemonDisplay({ pokemon }){
+
     const [isHovering, setIsHovering] = useState(false);
     
     return (
@@ -14,9 +15,9 @@ function PokemonDisplay({ pokemon }){
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                 >
-                    <img
+                    <img    
                         className="pokemon-img"
-                        src={isHovering ? pokemon.sprites.front_shiny : pokemon.sprites.front_default}
+                        src={isHovering ? pokemon.sprites.front_shiny : pokemon.sprites.front_default}  
                         alt={pokemon.name}
                     />
                 </div>

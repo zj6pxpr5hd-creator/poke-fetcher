@@ -234,6 +234,10 @@ main{
 }
 
 
+.clear-button{
+  margin-top: 2rem;
+}
+
 /*==========================
     Pokemon Display
 ===========================*/
