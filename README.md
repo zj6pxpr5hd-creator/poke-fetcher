@@ -1,16 +1,39 @@
-# React + Vite
+# Pokè-Cache
+Client-side caching with freshness and LRU eviction.
+Poke-Cache is a small web application that uses the Poke-API to fetch pokemon data, and implements a client-side caching system using localStorage.
+The goal of the project was not to build a Pokedex replica but to explore real-world concerns such as data freshness, eviction rules and user-controlled cache invalidation in a front-end only application.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Why Poke API?**
+I chose the Poke API because:
+-it is beginner-friendly and well documented
+-it requires no authentication
+-it provides a large and varied dataset (i only used the pokemon endpoint but there are many more), similar to real-world APIs
+This allowed me to focus on system design rather than managing APIs limitations 
 
-Currently, two official plugins are available:
+**Core Features**
+-Fetch Pokemon data from PokeAPI
+-Cache API responses in localStorage
+-Refreshes stale data 
+-Displays data origin
+-Allow manual cache refresh from the UI
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Caching Strategy**
+This was the core of the project so i will explain in detail how the caching works and the reasoning behind my choices.
+The cache is saved in localStorage, a browser feature that lets you store small amounts of key–value data persistently on the client, surviving page reloads and browser restarts. This allows to keep the project fully fron-end.
+Each cached entry includes:  
+    -data: the actual pokemon data retrieved trought the PokeAPI
+    -fetcheAt: timestap of when the data was retrieved from the API
+    -lastAccess: timestamp of the most recent usage of the data
+The cached data is considered valid for 1 hour after fetching (using the fetchedAt property).
+Pokemon Data changes very rarely so there is no need to refresh it more than every hour.
+If the cache exceeds 12 entries, the least recently accessed entry is evicted (using the lastAccess property).
+Simulates a memory limit in the amout of data I can cache. Using the lastAccess property instead of the fetchedAt property better approximates an LRU eviction stategy while remaining simple.
+Accessing cached data updates its lastAccessed value.
+Users can manually refresh data by clicking a button.
+The UI exposes cache behavior to make the system observable and debuggable.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**What i learned**
+-implementing a caching strategy in a front-end only application
+-writing eviction rules, based on time or on last access
+-displaying data neatly
+-making technichal decisions based on trade-offs between speed and data freshness
