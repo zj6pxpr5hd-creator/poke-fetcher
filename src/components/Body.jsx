@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PokemonDisplay from "./PokemonDisplay";
-import { checkCache, retrieveDataFromCache, saveCache } from "../utils/cacheManagement";
+import { checkCache, retrieveDataFromCache, saveCache, capitalize } from "../utils/cacheManagement";
 
 
 function Body(){
@@ -22,7 +22,7 @@ function Body(){
             return;
         }
 
-        retrievePokemonData(input.trim());//if name is valid fetch pokemon
+        retrievePokemonData(capitalize(input.trim()));//if name is valid fetch pokemon
         setInput("");
  
     }
@@ -113,7 +113,7 @@ function Body(){
                 <button className="search-button" type="submit" >{loading ? "Searching" : "Search"}</button>
             </form>
             {error.length!==0 && <p>{error}</p>}
-            {pokemondata && <PokemonDisplay pokemon={pokemondata} servedfromcache={servedfromcache}/>}
+            {pokemondata && <PokemonDisplay pokemon={pokemondata} servedfromcache={servedfromcache} fetchPokemonData={fetchPokemonData}/>}
             <button className="clear-button" onClick={clearCache}>Clear Cache</button>
         </main>
     );

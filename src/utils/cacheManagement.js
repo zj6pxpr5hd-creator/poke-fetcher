@@ -14,6 +14,8 @@
 
     export function saveCache(key, data){ //saves pokemon data in cache with time of fetching
 
+        const name = capitalize(key);
+
         // object to save contains the time of fetching and the pokemon data
         const save = {  
             data: data,
@@ -35,7 +37,7 @@
             }
             localStorage.removeItem(localStorage.key(oldestIndex));  //removes oldest dataset
         }
-        localStorage.setItem(key, JSON.stringify(save));    //saves new data
+        localStorage.setItem(name, JSON.stringify(save));    //saves new data
     }
 
     //retrieves pokemon data from cache based on assigned key
@@ -45,3 +47,13 @@
         localStorage.setItem(key, JSON.stringify(el));
         return el;
     }
+
+    export function capitalize(str) {
+        return str
+            .toLowerCase()
+            .split(" ")
+            .map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+            )
+            .join(" ");
+        }

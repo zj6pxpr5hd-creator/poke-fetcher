@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-function PokemonDisplay({ pokemon , servedfromcache }){
+function PokemonDisplay({ pokemon , servedfromcache , fetchPokemonData}){
 
     const [isHovering, setIsHovering] = useState(false);
     
     const refreshData =  () => {
-        
+        fetchPokemonData(pokemon.name);
     };
 
 
